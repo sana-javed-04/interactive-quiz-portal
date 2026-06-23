@@ -41,66 +41,57 @@ let qus = document.querySelector(".qus");
 let ansBtns = document.querySelector(".ans-btn");
 let nextBtn = document.querySelector(".next-btn");
 
+// MOVED OUTSIDE: Shared global state variables
+let curntQusIndx = 0;
+let score = 0;
 
 function quizStart() {
-    let curntQusIndx = 0;
-    var score = 0;
-    nextBtn.innerHTML = "Next";  // as we change then in replay
+    // RESET VALUES: Do not use 'let' or 'var' here
+    curntQusIndx = 0;
+    score = 0;
+    nextBtn.innerHTML = "Next"; 
     showQuestion();
 };
 
-
 function resetStatus() {
     nextBtn.style.display = "none";
-
-    //loop Remove the first child element of answerButtons
     while (ansBtns.firstChild) {
         ansBtns.removeChild(ansBtns.firstChild);
     }
 }
 
 function selectAns(event) {
-
     let selectedBtn = event.target;
     if (selectedBtn.dataset.correct === 'true') {
         selectedBtn.classList.add("correct");
-        score++;
+        score++; // Properly increments the global score tracker
     } else {
         selectedBtn.classList.add("incorrect");
     }
 
-    // other button can not click if one click
     Array.from(ansBtns.children).forEach(button => {
         if (button.dataset.correct === "true") {
             button.classList.add("correct");
         }
         button.disabled = true;
     });
-
     nextBtn.style.display = "block";
 };
 
 function showQuestion() {
-    // for hide next and ans btns
     resetStatus();
-
-    // for show ques
-    let curntQus = questions[curntQusIndx];
+    let curntQus = questions[curntQusIndx]; // Properly reads the global question pointer
     let quesNo = curntQusIndx + 1;
     qus.innerHTML = quesNo + ". " + curntQus.question;
 
-    // for show ans
     curntQus.answers.forEach((answr) => {
         let button = document.createElement("button");
         button.innerHTML = answr.text;
         button.classList.add("btn");
         ansBtns.appendChild(button);
-
-        if (answr.correct) {  // if ans is true
-            //Adds a data-correct="true" class to the button to indicate it's the right answer
+        if (answr.correct) {
             button.dataset.correct = answr.correct;
         }
-
         button.addEventListener("click", selectAns);
     });
 };
@@ -113,7 +104,7 @@ function showScore() {
 }
 
 function handleNextBtn() {
-    curntQusIndx++;
+    curntQusIndx++; // Increments correctly across quiz iterations
     if (curntQusIndx < questions.length) {
         showQuestion();
     } else {
@@ -127,6 +118,7 @@ nextBtn.addEventListener("click", () => {
     } else {
         quizStart();
     }
-})
+});
 
+// Run application
 quizStart();
